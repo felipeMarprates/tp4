@@ -1,3 +1,4 @@
+import java.util.Arrays;
 
 public class Cripto {
     private byte[] dados;
@@ -13,7 +14,7 @@ public class Cripto {
         tmpBA = cifrar1(tmpBA);// cifragem de vigenerem utiliza uma matriz 256 x 10 x=numeros de bytes
                                // possiveis, y= digito da chave 0 a 9
         printBytes(tmpBA, "primeira cifragem");
-        // tmpBA = cifrar2(tmpBA);
+        tmpBA = cifrar2(tmpBA);
         printBytes(tmpBA, "segunda cifragem");
         tmpBA = cifrar3(tmpBA);
         return tmpBA;
@@ -30,7 +31,6 @@ public class Cripto {
         String chavecomp = criarChaveComposta(chavesimples, max);
 
         byte[] res = cifrarvigere(ent, chavecomp, max, tabela);
-        printBytes(res, "test");
 
         return res;
     }// percebi depois que era somente somar os valores da chave com os numeros mas
@@ -73,16 +73,18 @@ public class Cripto {
             int num = chavecomposta.charAt(i) - '0';// transformar '9' para 9
 
             saida[i] = tabela[ent[i] + 128][num];
-            System.out.println(saida[i]);
 
         }
-        System.out.println(saida);
+
         return saida;
     }
 
     private byte[] cifrar2(byte[] ent) {
         int max = ent.length;
+        printBytes(ent, "teste cifra 2");
         byte[][] matriz = criarMatriz(ent, max);
+        String chaves = Integer.toString(chave);
+        int[] instrucoes = getInstrucoes(matriz, chaves);// ordem a qual as colunas devem ficar
 
         return ent;
     }
@@ -96,14 +98,13 @@ public class Cripto {
         byte[][] ma = new byte[numLinhas][numColunas];
         System.out.print("\n");
         for (int i = 0; i < numLinhas; i++) {
-            System.out.println(i);
+            System.out.println(i + "+" + c + "=" + max);
             for (int j = 0; j < numColunas; j++) {
 
-                if (c > max) {
-                    System.out.println("what?..");
+                if (c >= max) {
                     return ma;
                 }
-                System.out.print("(" + i + "," + j + ")=" + c + "\t");
+                System.out.print("(" + i + "," + j + ")=" + ent[c] + "\t");
                 ma[i][j] = ent[c];
                 c++;
             }
@@ -111,6 +112,34 @@ public class Cripto {
 
         }
         return ma;
+    }
+
+    private int[] getInstrucoes(byte[][] matriz, String achave) {
+        int tamMax = achave.length();
+        int[] velhaOrdem = new int[tamMax];
+        for (int i = 0; i < tamMax; i++) {
+            velhaOrdem[i] = achave.charAt(i) - '0';
+
+        }
+        int[] novaOrdem = new int[tamMax];
+        novaOrdem = velhaOrdem.clone();
+        Arrays.sort(novaOrdem);
+        int[] instrucoes = new int[tamMax];
+        instrucoes = novaOrdem.clone();
+        for (int i = 0; i < tamMax; i++) {
+
+            instrucoes[i] = Arrays.binarySearch(novaOrdem, velhaOrdem[i]);
+
+        }
+        return instrucoes;
+    }
+
+    private byte[] reoganizarCol(int[] instrucoes, int[][] matriz, int max) {
+        int numColunas = Integer.toString(chave).length();// 5
+        int numLinhas = (int) Math.ceil((float) max / numColunas);// 4
+        for (int i = 0; i < numColunas * numLinhas; i++) {
+
+        }
     }
 
     private byte[] cifrar3(byte[] ent) {
@@ -159,7 +188,7 @@ public class Cripto {
     }
 
     private void printBytes(byte[] printar, String msg) {
-        System.out.println(msg);
+        System.out.println("\n-----------------------------------------\n" + msg);
         for (int i = 0; i < printar.length; i++) {
 
             System.out.print("\t" + printar[i] + ",");
