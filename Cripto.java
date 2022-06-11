@@ -2,7 +2,7 @@ import java.util.Arrays;
 
 public class Cripto {
     private byte[] dados;
-    private int chave = 19476;
+    private int chave = 9817652;// chave nao pode ter digitos repetidos
 
     public Cripto(byte[] aDados) {
         this.dados = aDados;
@@ -17,6 +17,8 @@ public class Cripto {
         tmpBA = cifrar2(tmpBA);
         printBytes(tmpBA, "segunda cifragem");
         tmpBA = cifrar3(tmpBA);
+        printBytes(tmpBA, "terceira cifragem");
+
         return tmpBA;
 
     }
@@ -81,11 +83,10 @@ public class Cripto {
 
     private byte[] cifrar2(byte[] ent) {
         int max = ent.length;
-        printBytes(ent, "teste cifra 2");
         byte[][] matriz = criarMatriz(ent, max);
         String chaves = Integer.toString(chave);
-        int[] instrucoes = getInstrucoes(matriz, chaves);// ordem a qual as colunas devem ficar
-        printInts(instrucoes, "instrucoes para modificar coluna");
+        int[] instrucoes = getInstrucoes(chaves);// ordem a qual as colunas devem ficar
+        // printInts(instrucoes, "instrucoees");
         byte[][] matrizReorganizada = reoganizarCol(instrucoes, matriz, max);
         byte sai[] = matrizParaArray(matrizReorganizada, max);
 
@@ -96,7 +97,8 @@ public class Cripto {
         int numColunas = Integer.toString(chave).length();// 5
         int numLinhas = (int) Math.ceil((float) max / numColunas);// 3
         int c = 0;
-        System.out.print("\nCOl " + numColunas + " Line " + numLinhas + " Max " + max + "\n");
+        // System.out.print("\nCOl " + numColunas + " Line " + numLinhas + " Max " + max
+        // + "\n");
 
         byte[][] ma = new byte[numLinhas][numColunas];
         System.out.print("\n");
@@ -105,11 +107,11 @@ public class Cripto {
             for (int j = 0; j < numColunas; j++) {
 
                 if (c >= max) {
-                    System.out.print("(" + i + "," + j + ")=" + -1 + "\n");
+                    // System.out.print("(" + i + "," + j + ")=" + -1 + "\n");
                     ma[i][j] = -1;
 
                 } else {
-                    System.out.print("(" + i + "," + j + ")=" + ent[c] + "\n");
+                    // System.out.print("(" + i + "," + j + ")=" + ent[c] + "\n");
                     ma[i][j] = ent[c];
                     c++;
                 }
@@ -119,7 +121,7 @@ public class Cripto {
         return ma;
     }
 
-    private int[] getInstrucoes(byte[][] matriz, String achave) {
+    private int[] getInstrucoes(String achave) {
         int tamMax = achave.length();
         int[] velhaOrdem = new int[tamMax];
         for (int i = 0; i < tamMax; i++) {
@@ -144,16 +146,18 @@ public class Cripto {
         int numLinhas = (int) Math.ceil((float) max / numColunas);// 4
         byte[][] reorganizado = new byte[numLinhas][numColunas];
         byte[] res = new byte[max];
-        System.out.print("\n");
+        // System.out.print("\n");
 
-        System.out.println("numero de linhas: " + numLinhas + "numero de colunas: " + numColunas
-                + " tamanhoInstrucoes: " + instrucoes.length);
+        // System.out.println("numero de linhas: " + numLinhas + "numero de colunas: " +
+        // numColunas
+        // + " tamanhoInstrucoes: " + instrucoes.length);
 
         for (int i = 0; i < numLinhas; i++) {
             for (int j = 0; j < numColunas; j++) {
                 reorganizado[i][instrucoes[j]] = matriz[i][j];
-                System.out.println("i = linha j = coluna(" + i + "," + instrucoes[j] + ")=" + matriz[i][j]
-                        + "instrucao = " + instrucoes[j]);
+                // System.out.println("i = linha j = coluna(" + i + "," + instrucoes[j] + ")=" +
+                // matriz[i][j]
+                // + "instrucao = " + instrucoes[j]);
 
             }
 
@@ -171,6 +175,28 @@ public class Cripto {
                 byte termo = ma[j][i];
                 if (termo != -1) {
                     res[c] = termo;
+                    // System.out.print("\n i=" + i + "j=" + j + " c =" + termo);
+                    c++;
+                }
+
+            }
+
+        }
+
+        return res;
+    }
+
+    private byte[] matrizParaArray2(byte[][] ma, int max) { // para o metedo de coluna da cifragem 2
+        int numColunas = Integer.toString(chave).length();// 5
+        int numLinhas = (int) Math.ceil((float) max / numColunas);// 4
+        byte[] res = new byte[max];
+        int c = 0;
+        for (int j = 0; j < numLinhas; j++) {
+            for (int i = 0; i < numColunas; i++) {
+                byte termo = ma[j][i];
+                if (termo != -1) {
+                    res[c] = termo;
+                    // System.out.print("\n i=" + i + "j=" + j + " c =" + termo);
                     c++;
                 }
 
@@ -189,9 +215,12 @@ public class Cripto {
 
         byte[] tmpBA = dados;
         tmpBA = decifrar3(tmpBA);
+        printBytes(tmpBA, "decifragem 3");
         tmpBA = decifrar2(tmpBA);
+        printBytes(tmpBA, "decifragem 2");
         tmpBA = decifrar1(tmpBA);
-        printBytes(tmpBA, "cifragem 1 (terceira a ser decifrada)");
+        printBytes(tmpBA, "decifragem 1");
+
         return tmpBA;
 
     }
@@ -219,11 +248,74 @@ public class Cripto {
     }
 
     private byte[] decifrar2(byte[] ent) {
-        return ent;
+        int max = ent.length;
+        byte[][] matriz = criarMatriz(ent, max);
+        String chaves = Integer.toString(chave);
+        int[] deinstrucoes = getDeinstrucoes(chaves);// ordem a qual as colunas devem ficar
+        // printInts(deinstrucoes, "desintrucoes:");
+        matriz = decifrarColunasMatriz(matriz, ent, max, deinstrucoes);
+        byte[] sai = matrizParaArray2(matriz, max);
+
+        return sai;
+    }
+
+    private int[] getDeinstrucoes(String achave) {
+        // 98176 16789 35421
+        int tamMax = achave.length();
+        int[] velhaOrdem = new int[tamMax];
+        for (int i = 0; i < tamMax; i++) {
+            velhaOrdem[i] = achave.charAt(i) - '0';
+
+        }
+        int[] novaOrdem = new int[tamMax];
+        novaOrdem = velhaOrdem.clone();
+        Arrays.sort(novaOrdem);
+        int[] instrucoes = new int[tamMax];
+        instrucoes = novaOrdem.clone();
+        // printInts(velhaOrdem, "velha ordem");
+        // printInts(novaOrdem, "nova ordem");
+
+        for (int i = 0; i < tamMax; i++) {
+
+            instrucoes[i] = pesquisarArray(velhaOrdem, novaOrdem[i]);
+
+        }
+        return instrucoes;
+    }
+
+    private byte[][] decifrarColunasMatriz(byte[][] matriz, byte[] ent, int max, int[] instrucoes) {
+        int numColunas = Integer.toString(chave).length();
+        int numLinhas = (int) Math.ceil((float) max / numColunas);
+        int c = 0;
+
+        for (int j = 0; j < numColunas; j++) {
+            for (int i = 0; i < numLinhas; i++) {
+                byte termo = matriz[i][instrucoes[j]];
+                if (termo != -1 || c >= max) {
+                    matriz[i][instrucoes[j]] = ent[c];
+                    // System.out.print("(" + i + "," + instrucoes[j] + ")=" + ent[c] + "\n");
+                    c++;
+
+                } else {
+                    i = numLinhas;
+
+                }
+            }
+        }
+        return matriz;
     }
 
     private byte[] decifrar3(byte[] ent) {
         return ent;
+    }
+
+    private int pesquisarArray(int[] arr, int num) {
+        for (int i = 0; i < arr.length; i++) {
+            if (arr[i] == num) {
+                return i;
+            }
+        }
+        return -1;
     }
 
     private void printBytes(byte[] printar, String msg) {
