@@ -1,6 +1,6 @@
 class main {
     public static void main(String[] args) {
-        int len = 16;
+        int len = 6;
         byte[] ent = new byte[len];
 
         for (int i = 0; i < len; i++) {
