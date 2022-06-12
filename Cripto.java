@@ -1,10 +1,8 @@
 import java.util.Arrays;
 
-import javax.sound.sampled.BooleanControl;
-
 public class Cripto {
     private byte[] dados;
-    private int chave = 9817652;// chave nao pode ter digitos repetidos
+    private int chave = 982765;// chave nao pode ter digitos repetidos
     private static final int TAM_BYTE = 8;
     private static final int VAZIO = -129;
 
@@ -17,23 +15,18 @@ public class Cripto {
         byte[] tmpBA = dados;
         tmpBA = cifrar1(tmpBA);// cifragem de vigenerem utiliza uma matriz 256 x 10 x=numeros de bytes
                                // possiveis, y= digito da chave 0 a 9
-        printBytes(tmpBA, "primeira cifragem");
+        printBytes(tmpBA, "Resultado primeira cifragem");
         tmpBA = cifrar2(tmpBA);
-        printBytes(tmpBA, "segunda cifragem");
+        printBytes(tmpBA, "Resultado segunda cifragem");
         tmpBA = cifrar3(tmpBA);
-        printBytes(tmpBA, "terceira cifragem");
+        printBytes(tmpBA, "Resutado terceira cifragem");
 
         return tmpBA;
 
     }
 
     private byte[] cifrar1(byte[] ent) { // cifragem de Vigenere
-        int test1 = -126;
-        int test2 = 0;
-        int test3 = 15;
-        intToBinary(test1);
-        intToBinary(test2);
-        intToBinary(test3);
+
         byte[][] tabela = criarTabelaVigere();// "alfabeto" de bytes
 
         int max = ent.length;// tamanho final da chave composta
@@ -110,7 +103,6 @@ public class Cripto {
         // + "\n");
 
         int[][] ma = new int[numLinhas][numColunas];
-        System.out.print("\n");
         for (int i = 0; i < numLinhas; i++) {
 
             for (int j = 0; j < numColunas; j++) {
@@ -154,7 +146,7 @@ public class Cripto {
         int numColunas = Integer.toString(chave).length();// 5
         int numLinhas = (int) Math.ceil((float) max / numColunas);// 4
         int[][] reorganizado = new int[numLinhas][numColunas];
-        byte[] res = new byte[max];
+
         // System.out.print("\n");
 
         // System.out.println("numero de linhas: " + numLinhas + "numero de colunas: " +
@@ -217,18 +209,40 @@ public class Cripto {
     }
 
     private byte[] cifrar3(byte[] ent) {
-        return ent;
+        boolean[][] chaveBits = toListaBits(chave);
+        boolean[][] entBits = toListaBits(ent);
+        int chaveTAM = Integer.toString(chave).length();
+        boolean[][] saiBits = xor(entBits, ent.length, chaveBits, chaveTAM);
+        byte[] sai = fromListaBits(saiBits, ent.length);
+        return sai;
+    }
+
+    private boolean[][] xor(boolean[][] ent, int entTAM, boolean[][] chave, int chaveTam) {
+        int iChave = 0;
+        boolean[][] res = new boolean[entTAM][TAM_BYTE];
+        for (int i = 0; i < entTAM; i++) {
+            iChave = i % chaveTam;
+            for (int j = 0; j < TAM_BYTE; j++) {
+                boolean termoEnt = ent[i][j];
+                boolean termoChave = chave[iChave][j];
+                boolean termoRes = termoEnt ^ termoChave;
+                // System.out.println(termoEnt + "^" + termoChave + "=" + termoRes);
+                res[i][j] = termoRes;
+
+            }
+        }
+        return res;
     }
 
     public byte[] decifrar() { // metodo retorna dados decifrado passando por 3 etapas de decifragem
 
         byte[] tmpBA = dados;
         tmpBA = decifrar3(tmpBA);
-        printBytes(tmpBA, "decifragem 3");
+        printBytes(tmpBA, "Resultado terceira decifragem ");
         tmpBA = decifrar2(tmpBA);
-        printBytes(tmpBA, "decifragem 2");
+        printBytes(tmpBA, "Resultado segunda decifragem ");
         tmpBA = decifrar1(tmpBA);
-        printBytes(tmpBA, "decifragem 1");
+        printBytes(tmpBA, "Resultado primeira decifragem ");
 
         return tmpBA;
 
@@ -315,11 +329,49 @@ public class Cripto {
     }
 
     private byte[] decifrar3(byte[] ent) {
-        return ent;
+        boolean[][] chaveBits = toListaBits(chave);
+        boolean[][] entBits = toListaBits(ent);
+        int chaveTAM = Integer.toString(chave).length();
+        boolean[][] saiBits = xor(entBits, ent.length, chaveBits, chaveTAM);
+        byte[] sai = fromListaBits(saiBits, ent.length);
+
+        return sai;
     }
 
-    private boolean[] intToBinary(int num8bits) {
+    private byte[] fromListaBits(boolean[][] ent, int entTAM) {
+        byte[] res = new byte[entTAM];
+        for (int i = 0; i < entTAM; i++) {
+            res[i] = binaryToByte(ent[i]);
+        }
+        return res;
+    }
+
+    private boolean[][] toListaBits(int ent) {
+        String entString = Integer.toString(ent);
+        boolean[][] res = new boolean[entString.length()][TAM_BYTE];
+        for (int i = 0; i < entString.length(); i++) {
+            int termo = entString.charAt(i) - '0';// transformar '9' para 9
+            res[i] = toBinary(termo);
+
+        }
+        return res;
+    }
+
+    private boolean[][] toListaBits(byte[] ent) {
+
+        boolean[][] res = new boolean[ent.length][TAM_BYTE];
+        for (int i = 0; i < ent.length; i++) {
+            int termo = ent[i];
+            res[i] = toBinary(termo);
+
+        }
+        return res;
+    }
+
+    private boolean[] toBinary(int num8bits) {
         boolean[] res = new boolean[TAM_BYTE];
+        int c = num8bits;
+        c = c + 0;
 
         if (num8bits < 0) {
             res[TAM_BYTE - 1] = true;
@@ -338,31 +390,22 @@ public class Cripto {
             num8bits = num8bits / 2;
 
         }
+        // String printar = ("byte" + c);
+        // printBytes(res, printar);
 
         return res;
     }
 
-    private int binaryToInt(boolean[] _8bits) {
-        int[] num = { 1, 2, 4, 8, 16, 32, 64, -128 };
-        int res = 0;
-        for (int i = 0; i < TAM_BYTE; i++) {
-            if (_8bits[i]) {
-                res += num[0];
-            }
-
-        }
-        return res;
-    }
-
-    private byte binaryToByte(boolean[] _8bits) {
-        int[] num = { 1, 2, 4, 8, 16, 32, 64, -128 };
+    private byte binaryToByte(boolean[] o8bits) {
+        byte[] num = { 1, 2, 4, 8, 16, 32, 64, -128 };
         byte res = 0;
         for (int i = 0; i < TAM_BYTE; i++) {
-            if (_8bits[i]) {
-                res += num[0];
+            if (o8bits[i] == true) {
+                res += num[i];
             }
 
         }
+        // System.out.println("RESULTADO=" + res);
         return res;
     }
 
@@ -384,7 +427,7 @@ public class Cripto {
         System.out.println("\n-----------------------------------------");
     }
 
-    private void printInts(int[] printar, String msg) {
+    private void printBytes(boolean[] printar, String msg) {
         System.out.println("\n-----------------------------------------\n" + msg);
         for (int i = 0; i < printar.length; i++) {
 
