@@ -1,8 +1,12 @@
 import java.util.Arrays;
 
+import javax.sound.sampled.BooleanControl;
+
 public class Cripto {
     private byte[] dados;
     private int chave = 9817652;// chave nao pode ter digitos repetidos
+    private static final int TAM_BYTE = 8;
+    private static final int VAZIO = -129;
 
     public Cripto(byte[] aDados) {
         this.dados = aDados;
@@ -24,7 +28,12 @@ public class Cripto {
     }
 
     private byte[] cifrar1(byte[] ent) { // cifragem de Vigenere
-
+        int test1 = -126;
+        int test2 = 0;
+        int test3 = 15;
+        intToBinary(test1);
+        intToBinary(test2);
+        intToBinary(test3);
         byte[][] tabela = criarTabelaVigere();// "alfabeto" de bytes
 
         int max = ent.length;// tamanho final da chave composta
@@ -83,24 +92,24 @@ public class Cripto {
 
     private byte[] cifrar2(byte[] ent) {
         int max = ent.length;
-        byte[][] matriz = criarMatriz(ent, max);
+        int[][] matriz = criarMatriz(ent, max);
         String chaves = Integer.toString(chave);
         int[] instrucoes = getInstrucoes(chaves);// ordem a qual as colunas devem ficar
         // printInts(instrucoes, "instrucoees");
-        byte[][] matrizReorganizada = reoganizarCol(instrucoes, matriz, max);
+        int[][] matrizReorganizada = reoganizarCol(instrucoes, matriz, max);
         byte sai[] = matrizParaArray(matrizReorganizada, max);
 
         return sai;
     }
 
-    private byte[][] criarMatriz(byte[] ent, int max) {
+    private int[][] criarMatriz(byte[] ent, int max) {
         int numColunas = Integer.toString(chave).length();// 5
         int numLinhas = (int) Math.ceil((float) max / numColunas);// 3
         int c = 0;
         // System.out.print("\nCOl " + numColunas + " Line " + numLinhas + " Max " + max
         // + "\n");
 
-        byte[][] ma = new byte[numLinhas][numColunas];
+        int[][] ma = new int[numLinhas][numColunas];
         System.out.print("\n");
         for (int i = 0; i < numLinhas; i++) {
 
@@ -108,7 +117,7 @@ public class Cripto {
 
                 if (c >= max) {
                     // System.out.print("(" + i + "," + j + ")=" + -1 + "\n");
-                    ma[i][j] = -1;
+                    ma[i][j] = VAZIO;
 
                 } else {
                     // System.out.print("(" + i + "," + j + ")=" + ent[c] + "\n");
@@ -141,10 +150,10 @@ public class Cripto {
         return instrucoes;
     }
 
-    private byte[][] reoganizarCol(int[] instrucoes, byte[][] matriz, int max) {
+    private int[][] reoganizarCol(int[] instrucoes, int[][] matriz, int max) {
         int numColunas = Integer.toString(chave).length();// 5
         int numLinhas = (int) Math.ceil((float) max / numColunas);// 4
-        byte[][] reorganizado = new byte[numLinhas][numColunas];
+        int[][] reorganizado = new int[numLinhas][numColunas];
         byte[] res = new byte[max];
         // System.out.print("\n");
 
@@ -165,16 +174,16 @@ public class Cripto {
         return reorganizado;
     }
 
-    private byte[] matrizParaArray(byte[][] ma, int max) {
+    private byte[] matrizParaArray(int[][] ma, int max) {
         int numColunas = Integer.toString(chave).length();// 5
         int numLinhas = (int) Math.ceil((float) max / numColunas);// 4
         byte[] res = new byte[max];
         int c = 0;
         for (int i = 0; i < numColunas; i++) {
             for (int j = 0; j < numLinhas; j++) {
-                byte termo = ma[j][i];
-                if (termo != -1) {
-                    res[c] = termo;
+                int termo = ma[j][i];
+                if (termo != VAZIO) {
+                    res[c] = (byte) termo;
                     // System.out.print("\n i=" + i + "j=" + j + " c =" + termo);
                     c++;
                 }
@@ -186,16 +195,16 @@ public class Cripto {
         return res;
     }
 
-    private byte[] matrizParaArray2(byte[][] ma, int max) { // para o metedo de coluna da cifragem 2
+    private byte[] matrizParaArray2(int[][] ma, int max) { // para o metedo de coluna da cifragem 2
         int numColunas = Integer.toString(chave).length();// 5
         int numLinhas = (int) Math.ceil((float) max / numColunas);// 4
         byte[] res = new byte[max];
         int c = 0;
         for (int j = 0; j < numLinhas; j++) {
             for (int i = 0; i < numColunas; i++) {
-                byte termo = ma[j][i];
-                if (termo != -1) {
-                    res[c] = termo;
+                int termo = ma[j][i];
+                if (termo != VAZIO) {
+                    res[c] = (byte) termo;
                     // System.out.print("\n i=" + i + "j=" + j + " c =" + termo);
                     c++;
                 }
@@ -249,7 +258,7 @@ public class Cripto {
 
     private byte[] decifrar2(byte[] ent) {
         int max = ent.length;
-        byte[][] matriz = criarMatriz(ent, max);
+        int[][] matriz = criarMatriz(ent, max);
         String chaves = Integer.toString(chave);
         int[] deinstrucoes = getDeinstrucoes(chaves);// ordem a qual as colunas devem ficar
         // printInts(deinstrucoes, "desintrucoes:");
@@ -283,15 +292,15 @@ public class Cripto {
         return instrucoes;
     }
 
-    private byte[][] decifrarColunasMatriz(byte[][] matriz, byte[] ent, int max, int[] instrucoes) {
+    private int[][] decifrarColunasMatriz(int[][] matriz, byte[] ent, int max, int[] instrucoes) {
         int numColunas = Integer.toString(chave).length();
         int numLinhas = (int) Math.ceil((float) max / numColunas);
         int c = 0;
 
         for (int j = 0; j < numColunas; j++) {
             for (int i = 0; i < numLinhas; i++) {
-                byte termo = matriz[i][instrucoes[j]];
-                if (termo != -1 || c >= max) {
+                int termo = matriz[i][instrucoes[j]];
+                if (termo != VAZIO || c >= max) {
                     matriz[i][instrucoes[j]] = ent[c];
                     // System.out.print("(" + i + "," + instrucoes[j] + ")=" + ent[c] + "\n");
                     c++;
@@ -309,13 +318,61 @@ public class Cripto {
         return ent;
     }
 
+    private boolean[] intToBinary(int num8bits) {
+        boolean[] res = new boolean[TAM_BYTE];
+
+        if (num8bits < 0) {
+            res[TAM_BYTE - 1] = true;
+            num8bits = 128 + num8bits;
+        } else {
+            res[TAM_BYTE - 1] = false;
+        }
+        for (int i = 0; num8bits > 0; i++) {
+
+            if (num8bits % 2 == 1) {
+                res[i] = true;
+
+            } else {
+                res[i] = false;
+            }
+            num8bits = num8bits / 2;
+
+        }
+
+        return res;
+    }
+
+    private int binaryToInt(boolean[] _8bits) {
+        int[] num = { 1, 2, 4, 8, 16, 32, 64, -128 };
+        int res = 0;
+        for (int i = 0; i < TAM_BYTE; i++) {
+            if (_8bits[i]) {
+                res += num[0];
+            }
+
+        }
+        return res;
+    }
+
+    private byte binaryToByte(boolean[] _8bits) {
+        int[] num = { 1, 2, 4, 8, 16, 32, 64, -128 };
+        byte res = 0;
+        for (int i = 0; i < TAM_BYTE; i++) {
+            if (_8bits[i]) {
+                res += num[0];
+            }
+
+        }
+        return res;
+    }
+
     private int pesquisarArray(int[] arr, int num) {
         for (int i = 0; i < arr.length; i++) {
             if (arr[i] == num) {
                 return i;
             }
         }
-        return -1;
+        return VAZIO;
     }
 
     private void printBytes(byte[] printar, String msg) {
