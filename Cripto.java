@@ -2,7 +2,7 @@ import java.util.Arrays;
 
 public class Cripto {
     private byte[] dados;
-    private int chave = 982765;// chave nao pode ter digitos repetidos
+    private int chave = 982765;// chave nao pode ter digitos repetidos nem ser maior que os dados
     private static final int TAM_BYTE = 8;
     private static final int VAZIO = -129;
 
@@ -167,8 +167,8 @@ public class Cripto {
     }
 
     private byte[] matrizParaArray(int[][] ma, int max) {
-        int numColunas = Integer.toString(chave).length();// 5
-        int numLinhas = (int) Math.ceil((float) max / numColunas);// 4
+        int numColunas = Integer.toString(chave).length();
+        int numLinhas = (int) Math.ceil((float) max / numColunas);
         byte[] res = new byte[max];
         int c = 0;
         for (int i = 0; i < numColunas; i++) {
@@ -188,8 +188,8 @@ public class Cripto {
     }
 
     private byte[] matrizParaArray2(int[][] ma, int max) { // para o metedo de coluna da cifragem 2
-        int numColunas = Integer.toString(chave).length();// 5
-        int numLinhas = (int) Math.ceil((float) max / numColunas);// 4
+        int numColunas = Integer.toString(chave).length();
+        int numLinhas = (int) Math.ceil((float) max / numColunas);
         byte[] res = new byte[max];
         int c = 0;
         for (int j = 0; j < numLinhas; j++) {
