@@ -1,5 +1,7 @@
 alunos: Felipe Vilas Boas Marprates e Helen Sousa.
- Todas as cifragens e decifragens foram feitas na classe cripto.
+Todas as cifragens e decifragens foram feitas na classe cripto na pasta aed3.
+
+
 Você implementou todos os requisitos? Houve alguma operação mais difícil? Você enfrentou algum desafio na implementação? Os resultados foram alcançados? ... A ideia, portanto, é relatar como foi a experiência de desenvolvimento do TP. Aqui, a ideia é entender como foi para você desenvolver este TP.
  
 a operação mais difícil de ser implementada foi a cifragem de colunas pois eu tive que criar a matriz e depois pensar como mudar a ordem das colunas e eu acabei criando um método de  instruções que comparava os dígitos da chave com a eles em ordem e partir disso vai  criar uma array que retorna as instruções de onde a coluna X deve estar para cifragem e depois eu tive que fazer o contrário. O xor eu achei que seria a mais difícil de implementar mais foi bem fácil ainda mais que o jeito de decifrar é o mesmo de cifrar. Os resultados foram alcançados, mas se eu fizesse de novo eu criaria formas de usar chaves maiores pois do jeito que está implementado não pode ter dígitos repetidos.

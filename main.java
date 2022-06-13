@@ -1,17 +1,41 @@
-class main {
-    public static void main(String[] args) {
-        int len = 11;
-        byte[] ent = new byte[len];
-        System.out.println("\noriginal\n");
-        for (int i = 0; i < len; i++) {
-            ent[i] = (byte) i;
-            System.out.print("\t" + ent[i] + ",");
-        }
 
-        Cripto cr = new Cripto(ent);
-        ent = cr.cifrar();
-        Cripto dcr = new Cripto(ent);
-        ent = dcr.decifrar();
+import java.util.Scanner;
 
-    }
+public class Main {
+
+  private static Scanner console = new Scanner(System.in);
+
+  public static void main(String[] args) {
+
+    int opcao;
+    do {
+      System.out.println("\nMENU PRINCIPAL");
+      System.out.println("\n1) Livros");
+      System.out.println("2) Clientes");
+      System.out.println("\n0) Sair");
+
+      System.out.print("\nOpção: ");
+      try {
+        opcao = Integer.valueOf(console.nextLine());
+      } catch (NumberFormatException e) {
+        opcao = -1;
+      }
+
+      switch (opcao) {
+        case 1:
+          (new entidades.livros.InteracoesLivros()).menuLivros();
+          break;
+        case 2:
+          (new entidades.clientes.InteracoesClientes()).menuClientes();
+          break;
+        case 0:
+          break;
+        default:
+          System.out.println("Opção inválida");
+      }
+
+    } while (opcao != 0);
+
+  }
+
 }
